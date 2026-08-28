@@ -1,0 +1,510 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.apollo.io/api/v1/organizations/enrich",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{ $json.website }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "lZDr0kBFdbXT1ROrlGI82w"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "6b16ef9a-d455-406d-bd3a-724520c22e6a",
+      "name": "HTTP Request",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Analyze this company for B2B sales qualification.\n\nReturn ONLY valid JSON in this exact format:\n\n{\n  \"company_name\": \"\",\n  \"industry\": \"\",\n  \"company_size\": \"\",\n  \"lead_score\": 0,\n  \"likely_needs\": \"\",\n  \"sales_angle\": \"\",\n  \"outreach_message\": \"\"\n}\n\nRules:\n- lead_score must be between 0 and 100.\n- Base your analysis only on the company data provided.\n- Keep likely_needs concise.\n- sales_angle should explain the strongest commercial approach.\n- outreach_message should be a short personalized opening message.\n- Do not use markdown.\n\nCompany data:\n{{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "a7442ea8-ebb7-46fc-8002-154568e57084",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zDPHzmz9zyEomBWj",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.content.parts[0].text;\n\nreturn [\n  {\n    json: JSON.parse(raw)\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        0
+      ],
+      "id": "82176c48-f2fc-4f1d-9564-97f4b6cb9e9b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1cxDiOim1343cRpnxpDEN8kj6jfh2CZ3llWgOUwmEKXI",
+          "mode": "list",
+          "cachedResultName": "AI Lead Enrichment",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cxDiOim1343cRpnxpDEN8kj6jfh2CZ3llWgOUwmEKXI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cxDiOim1343cRpnxpDEN8kj6jfh2CZ3llWgOUwmEKXI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company_name": "={{ $json.company_name }}",
+            "industry": "={{ $json.industry }}",
+            "job_title": "={{ $json.job_title }}",
+            "lead_score": "={{ $json.lead_score }}",
+            "likely_needs": "={{ $json.likely_needs }}",
+            "sales_angle": "={{ $json.sales_angle }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "industry",
+              "displayName": "industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lead_score",
+              "displayName": "lead_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "likely_needs",
+              "displayName": "likely_needs",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sales_angle",
+              "displayName": "sales_angle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1680,
+        16
+      ],
+      "id": "64535090-8f02-4f97-a33a-9431f6c36958",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oMZ0wW732klT5KeU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const org = $json.organization;\n\nreturn [\n  {\n    json: {\n      name: org.name,\n      website: org.website_url,\n      domain: org.primary_domain,\n      industry: org.industry,\n      industries: org.industries,\n      employees: org.estimated_num_employees,\n      revenue: org.organization_revenue_printed,\n      founded_year: org.founded_year,\n      country: org.country,\n      city: org.city,\n      linkedin: org.linkedin_url,\n      description: org.short_description,\n      keywords: org.keywords\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -48
+      ],
+      "id": "5c9e5756-761a-4671-8a96-8db5ffd7e989",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "formTitle": "Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Company name"
+            },
+            {
+              "fieldLabel": "website"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "24c60dd3-74d0-4de1-9f29-1672afdeabd2",
+      "name": "On form submission",
+      "webhookId": "a8e21141-ad87-4116-93d0-7d8fe74b6dbd"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "84b5f064-bceb-478a-9343-681dd7ae7aaa",
+              "leftValue": "={{ !!$json.organization }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "2bc56fa8-9947-4168-baa8-988ada071c4e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "30fec4bc-e1c5-41bf-9df0-a7eeb4db6699",
+              "name": "status",
+              "value": "company_not_found",
+              "type": "string"
+            },
+            {
+              "id": "381543c1-83ab-4a3c-81de-4df88ce88e98",
+              "name": "message",
+              "value": "No company was found for the submitted domain.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        672,
+        96
+      ],
+      "id": "6ae1544b-75c4-4ca1-8d1f-e29eaf855118",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "82695005-696d-4e69-abfc-0a874b80cbda",
+              "name": "status",
+              "value": "apollo_api_error",
+              "type": "string"
+            },
+            {
+              "id": "a93f54f3-bb51-4b24-9027-3c7965b075bb",
+              "name": "message",
+              "value": "Apollo could not process the submitted company domain.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        448,
+        224
+      ],
+      "id": "179009e4-2e15-42b9-bb57-69e20acdc8da",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "API error",
+        "completionMessage": "We could not process this domain. Please check it and try again",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        224
+      ],
+      "id": "d17ee5f9-16c1-4230-9b91-a56294762a7c",
+      "name": "Form",
+      "webhookId": "1aa995e8-b73f-4b7d-9e61-43b2d5464237"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "company_not_found",
+        "completionMessage": "No company was found for this domain",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        944,
+        144
+      ],
+      "id": "d4290062-4078-487f-990d-8932783935eb",
+      "name": "Form1",
+      "webhookId": "959e70c4-4947-4824-ab21-6721dc58e3ca"
+    },
+    {
+      "parameters": {
+        "authentication": "appToken",
+        "resource": "company",
+        "name": "={{$json.company_name}}",
+        "additionalFields": {
+          "websiteUrl": "={{ $('On form submission').item.json.website }}"
+        }
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        0
+      ],
+      "id": "42fee884-7c7f-44da-b357-fc7279e507ba",
+      "name": "Create a company",
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "HiolAADZ5iLPyMya",
+          "name": "HubSpot Service Key account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a company",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Form1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a company": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "83a23908-7c8d-425a-9e59-0c7985356a2b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "73ed52834ee17bbf120abd69a40306572ec69c2a2d8845b5d52334c6277473ba"
+  },
+  "nodeGroups": [],
+  "id": "NQGl1GHEBdPeq8ag",
+  "tags": []
+}
