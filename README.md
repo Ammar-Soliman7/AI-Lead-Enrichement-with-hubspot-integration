@@ -6,7 +6,7 @@ The workflow accepts a company domain through a form, enriches the company using
 
 ## Workflow
 
-![Workflow](AI Lead Enrichement workflow.png)
+![AI Lead Enrichement workflow](AI Lead Enrichement workflow.png)
 
 ## What It Does
 
